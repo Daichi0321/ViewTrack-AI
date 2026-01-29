@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ホーム{% endblock %}
+{% block nav_home %}active{% endblock %}
+
+{% block content %}
+
+<!-- 進捗 -->
+<section class="progress-actions">
+  <a href="{% url 'progress-viewtrack' %}" class="progress-box">
+    <div class="progress-icon">
+      <i class="bi bi-list-ul"></i>
+    </div>
+    <div class="progress-text">
+      <h3>進捗一覧</h3>
+      <p>すべての視聴記録を確認</p>
+    </div>
+  </a>
+
+  <a href="{% url 'create-viewtrack' %}" class="progress-box highlight">
+    <div class="progress-icon">
+      ＋
+    </div>
+    <div class="progress-text">
+      <h3>進捗登録</h3>
+      <p>新しい視聴記録を追加</p>
+    </div>
+  </a>
+</section>
+
+<!-- 現在の視聴進捗 -->
+<section>
+  <h2>現在の視聴進捗</h2>
+
+  <div class="card-grid">
+    {% for item in object_list %}
+    <a href="{% url 'detail-viewtrack' item.pk %}" class="progress-card">
+      {% if item.thumbnail %}
+        <img src="{{ item.thumbnail.url }}" class="img-thumbnail" />
+      {% else %}
+        <img src="{% static 'viewtrack/img/default_thumbnail.png' %}" class="img-thumbnail" />
+      {% endif %}
+      <div class="progress-card-body">
+        <h3>{{ item.title }}</h3>
+        <span class="tag">{{ item.get_category_display }}</span>
+
+        {% if item.latest_episode %}
+          <div class="p-progress-row">
+            <span class="p-label">最新</span>
+            <span class="p-percent">{{ item.latest_episode.episode }}話</span>
+          </div>
+
+          <div class="p-progress-row">
+            <span class="p-label">進捗</span>
+            <span class="p-percent">{{ item.progress }}%</span>
+          </div>
+        
+          <div class="p-bar">
+            <div class="p-bar-fill" style="width: {{ item.progress }}%"></div>
+          </div>
+      
+          <div class="p-date">
+            最終視聴: {{ item.latest_episode.updated_at|date:"Y年n月j日" }}
+          </div>
+        {% else %}
+          <div class="p-date">まだ進捗がありません</div>
+        {% endif %}
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- お気に入りシーン -->
+<section class="favorite-section">
+  <h2 class="favorite-title">
+    お気に入りシーン
+    <span class="favorite-count">3</span>
+  </h2>
+  
+  <div class="favorite-list">
+    <div class="favorite-item">
+      <div class="favorite-icon">
+        <i class="bi bi-bookmark"></i>
+      </div>
+      <div class="favorite-content">
+        <h3>夜のオペラハウス</h3>
+        <p class="favorite-meta">第2話 ・ ⏱ 12:30</p>
+        <p class="favorite-desc">
+          主人公が真実を知るシーン。演技が素晴らしかった
+        </p>
+      </div>
+    </div>
+  
+    <div class="favorite-item">
+      <div class="favorite-icon">
+        <i class="bi bi-bookmark"></i>
+      </div>
+      <div class="favorite-content">
+        <h3>星降る丘の物語</h3>
+        <p class="favorite-meta">第7話 ・ ⏱ 18:45</p>
+        <p class="favorite-desc">
+          感動的なラストシーン
+        </p>
+      </div>
+    </div>
+  
+    <div class="favorite-item">
+      <div class="favorite-icon">
+        <i class="bi bi-bookmark"></i>
+      </div>
+      <div class="favorite-content">
+        <h3>都会の風景</h3>
+        <p class="favorite-meta">第1話 ・ ⏱ 05:20</p>
+        <p class="favorite-desc">
+          美しい夜景のシーン
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 視聴サマリー -->
+<section class="summary">
+  <h2>視聴サマリー</h2>
+  <div class="summary-grid">
+      <div>
+          <p class="label">今月の視聴時間</p>
+          <p class="value">42時間</p>
+      </div>
+      <div>
+          <p class="label">最も視聴した曜日</p>
+          <p class="value green">土曜日</p>
+      </div>
+      <div>
+          <p class="label">週間視聴グラフ</p>
+          <div class="graph">
+              <span></span><span></span><span></span><span></span><span></span>
+          </div>
+      </div>
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}作品詳細{% endblock %}
+{% block nav_progress %}active{% endblock %}
+
+{% block content %}
+
+<div class="card">
+  <h5 class="card-header">{{ object.title }}</h5>
+
+  <div class="card-body">
+    <h6 class="card-title">{{ object.get_category_display }}</h6>
+
+    {% if object.thumbnail %}
+      <img src="{{ object.thumbnail.url }}" class="img-thumbnail" />
+    {% else %}
+      <img src="{% static 'viewtrack/img/default_thumbnail.png' %}" class="img-thumbnail" />
+    {% endif %}
+
+    {% if object.total_episodes %}
+      <p>総話数：{{ object.total_episodes }}</p>
+    {% endif %}
+
+    {% if object.text %}
+      <p class="card-text">{{ object.text }}</p>
+    {% endif %}
+
+    <div style="margin-top: 12px;">
+      <a href="{% url 'progress-viewtrack' %}" class="btn btn-primary">一覧へ</a>
+      <a href="{% url 'update-viewtrack' object.pk %}" class="btn btn-primary">作品を編集</a>
+      <a href="{% url 'delete-viewtrack' object.pk %}" class="btn btn-primary">作品を削除</a>
+    </div>
+  </div>
+</div>
+
+<!-- エピソード進捗一覧 -->
+<div class="card" style="margin-top: 16px;">
+  <h5 class="card-header">エピソード進捗</h5>
+  <div class="card-body">
+
+    {% if episodes %}
+      <ul class="list-group">
+        {% for ep in episodes %}
+          <li class="list-group-item">
+            <strong>{{ ep.episode }}話</strong>
+            {% if ep.watch_seconds %}
+              <span style="margin-left: 10px;">{{ ep.formatted_time }}</span>
+            {% else %}
+              <span style="margin-left: 10px;">未記録</span>
+            {% endif %}
+
+            {% if ep.text %}
+              <div style="margin-top: 6px;">{{ ep.text }}</div>
+            {% endif %}
+
+            {# もしエピソード編集/削除も付けるならここにリンクを追加 #}
+            {# <a href="{% url 'episode-update' ep.pk %}">編集</a> #}
+            {# <a href="{% url 'episode-delete' ep.pk %}">削除</a> #}
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>まだ進捗がありません。進捗登録から追加してね。</p>
+      <a href="{% url 'create-viewtrack' %}" class="btn btn-primary">進捗登録へ</a>
+    {% endif %}
+
+  </div>
+</div>
+
+{% endblock content %}

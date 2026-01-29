@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}進捗登録{% endblock %}
+{% block nav_progress %}active{% endblock %}
+
+{% block content %}
+<form method="post" enctype="multipart/form-data" class="progress-create-form">
+  {% csrf_token %}
+
+  <!-- 作品情報（Work） -->
+  <div class="form-section">
+    <h3>作品情報</h3>
+
+    <label>タイトル</label>
+    <input type="text" name="title" required>
+
+    <label>カテゴリー</label>
+    <select name="category" required>
+      <option value="movie">映画</option>
+      <option value="anime">アニメ</option>
+      <option value="drama">ドラマ</option>
+      <option value="other">その他</option>
+    </select>
+
+    <label>総話数（進捗計算用）</label>
+    <input type="number" name="total_episodes" min="1">
+
+    <label>サムネイル</label>
+    <input type="file" name="thumbnail">
+  </div>
+
+  <!-- エピソード進捗 -->
+  <div class="form-section">
+    <h3>エピソード進捗</h3>
+
+    {{ form.as_p }}
+  </div>
+
+  <button type="submit" class="btn primary">登録する</button>
+</form>
+{% endblock %}

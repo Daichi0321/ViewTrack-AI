@@ -1,0 +1,82 @@
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}進捗一覧{% endblock %}
+{% block nav_progress %}active{% endblock %}
+
+{% block content %}
+
+<!-- 検索エリア -->
+<section class="progress-search">
+
+  <form method="get" class="search-box">
+    <i class="bi bi-search"></i>
+    <input type="text" name="q" placeholder="タイトルで検索" value="{{ request.GET.q }}">
+  </form>
+
+  <div class="category-row">
+    <div class="category-tabs">
+      <a href="{% url 'progress-viewtrack' %}" class="tab {% if not request.resolver_match.kwargs.category %}active{% endif %}">すべて</a>
+      <a href="{% url 'category-viewtrack' 'movie' %}" class="tab {% if request.resolver_match.kwargs.category == 'movie' %}active{% endif %}">映画</a>
+      <a href="{% url 'category-viewtrack' 'anime' %}" class="tab {% if request.resolver_match.kwargs.category == 'anime' %}active{% endif %}">アニメ</a>
+      <a href="{% url 'category-viewtrack' 'drama' %}" class="tab {% if request.resolver_match.kwargs.category == 'drama' %}active{% endif %}">ドラマ</a>
+      <a href="{% url 'category-viewtrack' 'other' %}" class="tab {% if request.resolver_match.kwargs.category == 'other' %}active{% endif %}">その他</a>
+    </div>
+    
+    <a href="{% url 'create-viewtrack' %}" class="add-progress-btn">
+      <span class="add-progress-icon">＋</span>
+      <span>進捗登録</span>
+    </a>
+
+  </div>
+
+</section>
+
+<!-- タイトル -->
+<h2 class="progress-title">進捗一覧</h2>
+
+<!-- 一覧 -->
+<section class="progress-grid">
+
+  {% for item in object_list %}
+  <a href="{% url 'detail-viewtrack' item.pk %}" class="progress-card">
+    {% if item.thumbnail %}
+      <img src="{{ item.thumbnail.url }}" class="img-thumbnail" />
+    {% else %}
+      <img src="{% static 'viewtrack/img/default_thumbnail.png' %}" class="img-thumbnail" />
+    {% endif %}
+    <div class="progress-card-body">
+      <h3>{{ item.title }}</h3>
+      <span class="tag">{{ item.get_category_display }}</span>
+
+      {% if item.latest_episode %}
+        <div class="p-progress-row">
+          <span class="p-label">最新</span>
+          <span class="p-percent">{{ item.latest_episode.episode }}話</span>
+        </div>
+        
+        <div class="p-progress-row">
+          <span class="p-label">進捗</span>
+          <span class="p-percent">{{ item.progress }}%</span>
+        </div>
+        
+        <div class="p-bar">
+          <div class="p-bar-fill" style="width: {{ item.progress }}%"></div>
+        </div>
+        
+        <div class="p-date">
+          最終視聴: {{ item.latest_episode.updated_at|date:"Y年n月j日" }}
+        </div>
+      {% else %}
+        <div class="p-date">まだ進捗がありません</div>
+      {% endif %}
+      
+    </div>
+  </a>
+  {% endfor %}
+
+</section>
+
+{% endblock %}
+

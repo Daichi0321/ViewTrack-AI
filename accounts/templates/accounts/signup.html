@@ -1,0 +1,48 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sign up | ViewTrack</title>
+  <link rel="stylesheet" href="{% static 'viewtrack/css/signup.css' %}">
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <h1 class="logo">ViewTrack</h1>
+      <p class="subtitle">視聴管理アプリ</p>
+    </header>
+
+    <section class="card">
+      <!-- Djangoの会員登録Viewに合わせて action は未指定（同じURLにPOST） -->
+      <form method="post" class="form">
+        {% csrf_token %}
+
+        <div class="field">
+          <label class="label" for="{{ form.username.id_for_label }}">ユーザーID</label>
+          {{ form.username }}
+        </div>
+
+        <div class="field">
+          <label class="label" for="{{ form.password1.id_for_label }}">パスワード</label>
+          {{ form.password1 }}
+        </div>
+
+        <div class="field">
+          <label class="label" for="{{ form.password2.id_for_label }}">パスワード（確認用）</label>
+          {{ form.password2 }}
+          <p class="hint">パスワードは8文字以上で設定してください。</p>
+        </div>
+        <button type="submit" class="btn primary">アカウント作成</button>
+      </form>
+
+      <div class="footer-link">
+        <a href="{% url 'accounts:login' %}">ログインはこちら</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
+
+
