@@ -35,37 +35,79 @@
 </div>
 
 <!-- エピソード進捗一覧 -->
-<div class="card" style="margin-top: 16px;">
-  <h5 class="card-header">エピソード進捗</h5>
-  <div class="card-body">
+<div class="episode-card">
+  <h5 class="episode-card-header">エピソード進捗</h5>
+  <div class="episode-card-body">
 
     {% if episodes %}
-      <ul class="list-group">
+      <ul class="episode-list">
         {% for ep in episodes %}
-          <li class="list-group-item">
-            <strong>{{ ep.episode }}話</strong>
-            {% if ep.watch_seconds %}
-              <span style="margin-left: 10px;">{{ ep.formatted_time }}</span>
-            {% else %}
-              <span style="margin-left: 10px;">未記録</span>
-            {% endif %}
+          <li class="episode-item">
+            <div class="episode-main">
+              <strong>{{ ep.episode }}話</strong>
+              {% if ep.watch_seconds %}
+                <span class="episode-time">{{ ep.formatted_time }}</span>
+              {% else %}
+                <span class="episode-empty">視聴済み</span>
+              {% endif %}
 
-            {% if ep.text %}
-              <div style="margin-top: 6px;">{{ ep.text }}</div>
-            {% endif %}
+              {% if ep.text %}
+                <div class="episode-text">{{ ep.text }}</div>
+              {% endif %}
+            </div>
 
-            {# もしエピソード編集/削除も付けるならここにリンクを追加 #}
-            {# <a href="{% url 'episode-update' ep.pk %}">編集</a> #}
-            {# <a href="{% url 'episode-delete' ep.pk %}">削除</a> #}
+            <div class="episode-actions">
+              {% if ep.pk %}
+                <a href="{% url 'favorite-add' ep.pk %}" class="episode-btn favorite">お気に入り</a>
+                <a href="{% url 'episode-update' ep.pk %}" class="episode-btn update">編集</a>
+                <a href="{% url 'episode-delete' ep.pk %}" class="episode-btn delete">削除</a>
+              {% else %}
+                <a href="{% url 'create-viewtrack' %}" class="episode-btn add">記録する</a>
+              {% endif %}
+            </div>
           </li>
         {% endfor %}
       </ul>
     {% else %}
       <p>まだ進捗がありません。進捗登録から追加してね。</p>
-      <a href="{% url 'create-viewtrack' %}" class="btn btn-primary">進捗登録へ</a>
+      <a href="{% url 'create-viewtrack' %}" class="episode-btn add">進捗登録へ</a>
     {% endif %}
+</div>
 
-  </div>
+<!-- お気に入りシーン一覧 -->
+<div class="favorite-card">
+  <h5 class="favorite-title">お気に入りシーン</h5>
+
+  {% for ep in episodes %}
+    {% if ep.favorites.all %}
+      <div class="favorite-episode-block">
+        <h6 class="favorite-episode-title">
+          第{{ ep.episode }}話
+        </h6>
+
+        <ul class="favorite-list">
+          {% for fav in ep.favorites.all %}
+            <li class="favorite-item">
+              <div class="favorite-main">
+                <span class="favorite-time">⏱ {{ fav.formatted_time }}</span>
+
+                {% if fav.memo %}
+                  <div class="favorite-memo">{{ fav.memo }}</div>
+                {% endif %}
+              </div>
+
+              <div class="favorite-actions">
+                <a href="{% url 'favorite-update' fav.pk %}" class="favorite-btn edit">編集</a>
+                <a href="{% url 'favorite-delete' fav.pk %}" class="favorite-btn delete">削除</a>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+  {% empty %}
+    <p>まだお気に入りシーンはありません。</p>
+  {% endfor %}
 </div>
 
 {% endblock content %}

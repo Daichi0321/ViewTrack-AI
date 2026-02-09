@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}エピソード編集{% endblock %}
+{% block content %}
+<h2>エピソード進捗を編集</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">保存</button>
+</form>
+
+<a href="{% url 'detail-viewtrack' object.work.pk %}">戻る</a>
+{% endblock %}

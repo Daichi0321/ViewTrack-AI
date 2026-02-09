@@ -76,69 +76,44 @@
 <section class="favorite-section">
   <h2 class="favorite-title">
     お気に入りシーン
-    <span class="favorite-count">3</span>
+    <span class="favorite-count">{{ favorites_count }}</span>
   </h2>
-  
-  <div class="favorite-list">
-    <div class="favorite-item">
-      <div class="favorite-icon">
-        <i class="bi bi-bookmark"></i>
-      </div>
-      <div class="favorite-content">
-        <h3>夜のオペラハウス</h3>
-        <p class="favorite-meta">第2話 ・ ⏱ 12:30</p>
-        <p class="favorite-desc">
-          主人公が真実を知るシーン。演技が素晴らしかった
-        </p>
-      </div>
-    </div>
-  
-    <div class="favorite-item">
-      <div class="favorite-icon">
-        <i class="bi bi-bookmark"></i>
-      </div>
-      <div class="favorite-content">
-        <h3>星降る丘の物語</h3>
-        <p class="favorite-meta">第7話 ・ ⏱ 18:45</p>
-        <p class="favorite-desc">
-          感動的なラストシーン
-        </p>
-      </div>
-    </div>
-  
-    <div class="favorite-item">
-      <div class="favorite-icon">
-        <i class="bi bi-bookmark"></i>
-      </div>
-      <div class="favorite-content">
-        <h3>都会の風景</h3>
-        <p class="favorite-meta">第1話 ・ ⏱ 05:20</p>
-        <p class="favorite-desc">
-          美しい夜景のシーン
-        </p>
-      </div>
-    </div>
-  </div>
-</section>
 
-<!-- 視聴サマリー -->
-<section class="summary">
-  <h2>視聴サマリー</h2>
-  <div class="summary-grid">
-      <div>
-          <p class="label">今月の視聴時間</p>
-          <p class="value">42時間</p>
+  <div class="favorite-list">
+    {% for scene in favorites_recent %}
+      <div class="favorite-item">
+        <div class="favorite-icon">
+          <i class="bi bi-bookmark"></i>
+        </div>
+
+        <div class="favorite-content">
+          <h3>{{ scene.episode.work.title }}</h3>
+
+          <p class="favorite-meta">
+            第{{ scene.episode.episode }}話 ・ ⏱ {{ scene.formatted_time }}
+          </p>
+
+          <p class="favorite-desc">
+            {% if scene.memo %}
+              {{ scene.memo }}
+            {% else %}
+              メモなし
+            {% endif %}
+          </p>
+        </div>
       </div>
-      <div>
-          <p class="label">最も視聴した曜日</p>
-          <p class="value green">土曜日</p>
+    {% empty %}
+      <div class="favorite-item">
+        <div class="favorite-icon">
+          <i class="bi bi-bookmark"></i>
+        </div>
+        <div class="favorite-content">
+          <h3>まだお気に入りがありません</h3>
+          <p class="favorite-meta">お気に入りシーンを追加するとここに表示されます</p>
+          <p class="favorite-desc">作品詳細から登録してみてください</p>
+        </div>
       </div>
-      <div>
-          <p class="label">週間視聴グラフ</p>
-          <div class="graph">
-              <span></span><span></span><span></span><span></span><span></span>
-          </div>
-      </div>
+    {% endfor %}
   </div>
 </section>
 

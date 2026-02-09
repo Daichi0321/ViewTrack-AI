@@ -15,15 +15,18 @@
     <div class="login-card">
       <form method="post" action="{% url 'accounts:login' %}">
         {% csrf_token %}
-        <label>ユーザーID</label>
-        <input type="text" name="username" placeholder="ユーザーIDを入力">
+        <div class="field">
+          <label for="id_username">ユーザーID</label>
+          <input id="id_username" type="text" name="username" placeholder="ユーザーIDを入力">
+        </div>
 
-        <label>パスワード</label>
-        <input type="password" name="password" placeholder="パスワードを入力">
-
+        <div class="field">
+          <label for="id_password">パスワード</label>
+          <input id="id_password" type="password" name="password" placeholder="パスワードを入力">
+        </div>
         <button type="submit" class="btn login-btn">ログイン</button>
       </form>
-
+      
       <a href="{% url 'accounts:signup' %}" class="btn register-btn">会員登録</a>
     </div>
   </div>

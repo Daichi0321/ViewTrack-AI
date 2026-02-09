@@ -41,11 +41,36 @@ class EpisodeProgress(models.Model):
     def formatted_time(self):
         if self.watch_seconds is None:
             return "未記録"
-        h = self.watch_seconds // 3600
-        m = (self.watch_seconds % 3600) // 60
-        s = self.watch_seconds % 60
-        return f"{h}時間{m}分{s}秒"
+
+        h, remainder = divmod(self.watch_seconds, 3600)
+        m, s = divmod(remainder, 60)
+
+        if h > 0:
+            return f"{h}:{m:02d}:{s:02d}"
+        else:
+            return f"{m}:{s:02d}"
 
     def __str__(self):
         return f"{self.work.title} - {self.episode}話"
+    
+class FavoriteScene(models.Model):
+    episode = models.ForeignKey(
+        EpisodeProgress,
+        on_delete=models.CASCADE,
+        related_name="favorites"
+    )
+    seconds = models.PositiveIntegerField("視聴時間（秒）")
+    memo = models.TextField("メモ", blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def formatted_time(self):
+        h, remainder = divmod(self.seconds, 3600)
+        m, s = divmod(remainder, 60)
+
+        if h > 0:
+            return f"{h}:{m:02d}:{s:02d}"
+        return f"{m}:{s:02d}"
+
+    def __str__(self):
+        return f"{self.episode.work.title} 第{self.episode.episode}話"
     

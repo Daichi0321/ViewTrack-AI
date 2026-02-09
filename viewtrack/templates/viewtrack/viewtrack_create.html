@@ -12,7 +12,7 @@
     <h3>作品情報</h3>
 
     <label>タイトル</label>
-    <input type="text" name="title" required>
+    <input type="text" name="title" placeholder="※必須" required>
 
     <label>カテゴリー</label>
     <select name="category" required>
@@ -23,7 +23,7 @@
     </select>
 
     <label>総話数（進捗計算用）</label>
-    <input type="number" name="total_episodes" min="1">
+    <input type="number" name="total_episodes" min="1" placeholder="※必須">
 
     <label>サムネイル</label>
     <input type="file" name="thumbnail">
@@ -33,9 +33,18 @@
   <div class="form-section">
     <h3>エピソード進捗</h3>
 
-    {{ form.as_p }}
+    {{ form.episode.label_tag }} {{ form.episode }}
+    {{ form.text.label_tag }} {{ form.text }}
+
+    <div>
+      {{ form.hours.label_tag }} {{ form.hours }}
+      {{ form.minutes.label_tag }} {{ form.minutes }}
+      {{ form.seconds.label_tag }} {{ form.seconds }}
+    </div>
+
   </div>
 
   <button type="submit" class="btn primary">登録する</button>
 </form>
+<a href="{% url 'progress-viewtrack' %}">戻る</a>
 {% endblock %}

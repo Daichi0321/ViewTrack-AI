@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}お気に入りを登録{% endblock %}
+{% block content %}
+<h2>お気に入りを登録</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">お気に入り追加</button>
+</form>
+
+{% endblock %}
+  

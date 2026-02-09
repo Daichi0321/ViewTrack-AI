@@ -10,7 +10,8 @@ from django.views.generic import (
     DeleteView,
     UpdateView,
     )
-from .models import Work, EpisodeProgress
+from .models import Work, EpisodeProgress, FavoriteScene
+from .forms import EpisodeProgressForm
 
 class ListViewTrackView(LoginRequiredMixin, ListView):
     template_name = 'viewtrack/viewtrack_progress.html'
@@ -63,7 +64,7 @@ class DetailViewTrackView(LoginRequiredMixin, DetailView):
 class CreateViewTrackView(LoginRequiredMixin, CreateView):
     template_name = 'viewtrack/viewtrack_create.html'
     model = EpisodeProgress
-    fields = ('episode', 'watch_seconds', 'text')
+    form_class = EpisodeProgressForm
     success_url = reverse_lazy('progress-viewtrack')
 
     def form_valid(self, form):
@@ -105,7 +106,7 @@ class CreateViewTrackView(LoginRequiredMixin, CreateView):
 
 class UpdateViewTrackView(LoginRequiredMixin, UpdateView):
     model = Work
-    fields = ('title', 'total_episodes', 'text', 'category','thumbnail')
+    form_class = EpisodeProgressForm
     template_name = 'viewtrack/viewtrack_update.html'
 
     def get_object(self, queryset=None):
@@ -145,5 +146,96 @@ def index(request):
             w.progress = max(0, min(100, pct))
         else:
             w.progress = 0
+    
+    fav_qs = (
+        FavoriteScene.objects
+        .filter(episode__work__user=request.user)
+        .select_related("episode", "episode__work")
+        .order_by("-created_at")
+    )
+    favorites_recent = fav_qs[:3]
+    favorites_count = fav_qs.count()
 
-    return render(request, 'viewtrack/index.html', {'object_list': latest_tracks})
+    return render(
+        request,
+        'viewtrack/index.html',
+        {
+            'object_list': latest_tracks,
+            'favorites_recent': favorites_recent,
+            'favorites_count': favorites_count,
+        }
+    )
+
+class UpdateEpisodeProgressView(LoginRequiredMixin, UpdateView):
+    model = EpisodeProgress
+    template_name = "viewtrack/episodeprogress_update.html"
+    fields = ("watch_seconds", "text")
+
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
+        if obj.work.user != self.request.user:
+            raise PermissionDenied
+        return obj
+
+    def get_success_url(self):
+        return reverse("detail-viewtrack", kwargs={"pk": self.object.work.pk})
+
+
+class DeleteEpisodeProgressView(LoginRequiredMixin, DeleteView):
+    model = EpisodeProgress
+    template_name = "viewtrack/episodeprogress_confirm_delete.html"
+
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
+        if obj.work.user != self.request.user:
+            raise PermissionDenied
+        return obj
+
+    def get_success_url(self):
+        return reverse("detail-viewtrack", kwargs={"pk": self.object.work.pk})
+
+class CreateFavoriteView(LoginRequiredMixin, CreateView):
+    model = FavoriteScene
+    fields = ("seconds", "memo")
+    template_name = "viewtrack/favorite_create.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        self.episode = EpisodeProgress.objects.get(pk=self.kwargs["episode_pk"])
+        if self.episode.work.user != request.user:
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.episode = self.episode
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse("detail-viewtrack", kwargs={"pk": self.object.episode.work.pk})
+
+class UpdateFavoriteView(LoginRequiredMixin, UpdateView):
+    model = FavoriteScene
+    fields = ("seconds", "memo")
+    template_name = "viewtrack/favorite_update.html"
+
+    def get_object(self):
+        obj = super().get_object()
+        if obj.episode.work.user != self.request.user:
+            raise PermissionDenied
+        return obj
+
+    def get_success_url(self):
+        return reverse("detail-viewtrack", kwargs={"pk": self.object.episode.work.pk})
+
+
+class DeleteFavoriteView(LoginRequiredMixin, DeleteView):
+    model = FavoriteScene
+    template_name = "viewtrack/favorite_confirm_delete.html"
+
+    def get_object(self):
+        obj = super().get_object()
+        if obj.episode.work.user != self.request.user:
+            raise PermissionDenied
+        return obj
+
+    def get_success_url(self):
+        return reverse("detail-viewtrack", kwargs={"pk": self.object.episode.work.pk})
